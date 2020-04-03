@@ -1,0 +1,28 @@
+<pre style="color:white;">
+
+program 1:)
+
+void Adafruit_MMA8451::read(void) {
+  // read x y z at once
+  Wire.beginTransmission(_i2caddr);
+  i2cwrite(MMA8451_REG_OUT_X_MSB);
+  Wire.endTransmission(false); // MMA8451 + friends uses repeated start!!
+
+  Wire.requestFrom(_i2caddr, 6);
+  x = Wire.read(); x <<= 8; x |= Wire.read(); x >>= 2;
+  y = Wire.read(); y <<= 8; y |= Wire.read(); y >>= 2;
+  z = Wire.read(); z <<= 8; z |= Wire.read(); z >>= 2;
+
+
+  uint8_t range = getRange();
+  uint16_t divider = 1;
+  if (range == MMA8451_RANGE_8_G) divider = 1024;
+  if (range == MMA8451_RANGE_4_G) divider = 2048;
+  if (range == MMA8451_RANGE_2_G) divider = 4096;
+
+  x_g = (float)x / divider;
+  y_g = (float)y / divider;
+  z_g = (float)z / divider;
+
+}
+</pre>
